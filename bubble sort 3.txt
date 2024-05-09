@@ -1,0 +1,73 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+
+#define MAX 50
+
+int arr[MAX], n;
+int flag = 0;
+
+void swap(int *a, int *b) {
+   int temp = *a;
+   *a = *b;
+   *b = temp;
+}
+
+void bubbleSort(int low, int high) {
+   for(int i = low; i < high; i++) {
+      for(int j = 0; j < n-i-1; j++) {
+         if(arr[j] > arr[j+1]) {
+            swap(&arr[j], &arr[j+1]);
+            flag = 1;
+         }
+      }
+   }
+}
+
+void *bubbleSortParallel(void *arg) {
+   int start = ((int *) arg)[0];
+   int end = ((int *) arg)[1];
+
+   bubbleSort(start, end);
+
+   pthread_exit(0);
+}
+
+int main() {
+   printf("Enter the number of elements: ");
+   scanf("%d", &n);
+
+   printf("Enter the elements: ");
+   for(int i = 0; i < n; i++) {
+      scanf("%d", &arr[i]);
+   }
+
+   pthread_t threads[4];
+   int block_size = n/4;
+
+   for(int i = 0; i < 4; i++) {
+      int start = i*block_size;
+      int end = start + block_size;
+      if (i == 3 && n % 4 != 0) {
+         end = n;
+      }
+      pthread_create(&threads[i], NULL, bubbleSortParallel, (void *) &(int [2]){start, end});
+   }
+
+   for(int i = 0; i < 4; i++) {
+      pthread_join(threads[i], NULL);
+   }
+
+   if(flag == 0) {
+      printf("The array is already sorted.\n");
+   } else {
+      bubbleSort(0, n);
+      printf("Sorted array: ");
+      for(int i = 0; i < n; i++) {
+         printf("%d ", arr[i]);
+      }
+      printf("\n");
+   }
+
+   return 0;
+}
