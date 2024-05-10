@@ -12,8 +12,62 @@ uniform_int_distribution<int> distribution(0, 9);
 // Generate a random number within the specified range
 // int random_number = distribution(engine);
 
-vector<int> vecGen(int arraySize) {};
+pthread_mutex_t mutex;
 
+#define th_num 5
+
+struct ThreadData
+{
+    int id;
+    int local_counter;
+    int arraySize;
+    vector<int> arr;
+    int missing_number;
+};
+int count = 0;
+
+void countMissing(ThreadData threadData[])
+{
+    pthread_mutex_init(&mutex, NULL);
+
+    // creating threads array
+    pthread_t threads[th_num];
+    for (int i = 0; i < th_num; i++)
+    {
+        threadData[i].id = i;
+        pthread_create(&threads[i], NULL, threadCountMissing, &threadData[i]);
+    }
+    for (int i = 0; i < th_num; i++)
+    {
+        pthread_join(threads[i], NULL);
+    }
+    pthread_mutex_destroy(&mutex);
+}
+void *threadCountMissing(void *thd)
+{
+    ThreadData *threadData = (ThreadData *)thd;
+    int portion = threadData->arraySize / th_num;
+    int start = threadData->id * portion;
+
+    for (int i = start; i < start + portion; i++)
+    {
+        if (threadData->arr[i] == threadData->missing_number)
+            threadData->local_counter++;
+    }
+    pthread_mutex_lock(&mutex);
+    count += threadData->local_counter;
+    pthread_mutex_unlock(&mutex);
+    return NULL;
+}
+vector<int> vecGen(int arraySize)
+{
+    vector<int> arr(arraySize);
+    for (int i = 0; i < arraySize; i++)
+    {
+        arr[i] = distribution(engine);
+    }
+    return arr;
+}
 int main()
 {
     cout << "Type array size: :" << endl;
@@ -26,21 +80,14 @@ int main()
 
     vector<int> arr = vecGen(arraySize);
 
+    ThreadData threadData[th_num];
+
     cout << endl;
-    int count = 0;
-    for (int i = 0; i < 16; i++)
-        if (arr[i] == 3)
-            count++;
 
-    cout << count << endl;
-}
+    cout << "There are " << count << " " << missing_number << endl;
 
-vector<int> vecGen(int arraySize)
-{
-    vector<int> arr(arraySize);
+    int sCount = 0;
     for (int i = 0; i < arraySize; i++)
-    {
-        arr[i] = distribution(engine);
-    }
-    return arr;
+        if (arr[i] == missing_number)
+            sCount++;
 }
