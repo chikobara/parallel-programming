@@ -12,12 +12,7 @@ typedef struct
     int start;
     int end;
 } thread_args;
-typedef struct MyStruct{
-    int start;
-    int end
-    int start;
 
-};
 void *bubble_sort(void *args)
 {
     thread_args *t_args = (thread_args *)args;
