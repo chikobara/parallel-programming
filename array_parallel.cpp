@@ -15,16 +15,34 @@ uniform_int_distribution<int> distribution(0, 9);
 pthread_mutex_t mutex;
 
 #define th_num 5
+int arraySize;
+int missing_number;
+int count = 0;
+vector<int> arr;
 
 struct ThreadData
 {
     int id;
     int local_counter;
-    int arraySize;
-    vector<int> arr;
-    int missing_number;
 };
-int count = 0;
+
+void *threadCountMissing(void *thd)
+{
+    ThreadData *threadData = (ThreadData *)thd;
+    int portion = arraySize / th_num;
+    int start = threadData->id * portion;
+    threadData->local_counter = 0;
+
+    for (int i = start; i < start + portion; i++)
+    {
+        if (arr[i] == missing_number)
+            threadData->local_counter++;
+    }
+    pthread_mutex_lock(&mutex);
+    count += threadData->local_counter;
+    pthread_mutex_unlock(&mutex);
+    return NULL;
+}
 
 void countMissing(ThreadData threadData[])
 {
@@ -43,22 +61,6 @@ void countMissing(ThreadData threadData[])
     }
     pthread_mutex_destroy(&mutex);
 }
-void *threadCountMissing(void *thd)
-{
-    ThreadData *threadData = (ThreadData *)thd;
-    int portion = threadData->arraySize / th_num;
-    int start = threadData->id * portion;
-
-    for (int i = start; i < start + portion; i++)
-    {
-        if (threadData->arr[i] == threadData->missing_number)
-            threadData->local_counter++;
-    }
-    pthread_mutex_lock(&mutex);
-    count += threadData->local_counter;
-    pthread_mutex_unlock(&mutex);
-    return NULL;
-}
 vector<int> vecGen(int arraySize)
 {
     vector<int> arr(arraySize);
@@ -71,23 +73,27 @@ vector<int> vecGen(int arraySize)
 int main()
 {
     cout << "Type array size: :" << endl;
-    int arraySize;
     cin >> arraySize;
 
     cout << "What you want to search for: " << endl;
-    int missing_number;
+
     cin >> missing_number;
 
-    vector<int> arr = vecGen(arraySize);
-
-    ThreadData threadData[th_num];
+    arr = vecGen(arraySize);
+    // for (int i = 0; i < arraySize; i++)
+    // {
+    //     cout << arr[i] << " ";
+    // }
 
     cout << endl;
-
-    cout << "There are " << count << " " << missing_number << endl;
+    ThreadData threadData[th_num];
+    countMissing(threadData);
+    cout << "There are " << count << " \'" << missing_number << "\'" << endl;
 
     int sCount = 0;
     for (int i = 0; i < arraySize; i++)
         if (arr[i] == missing_number)
             sCount++;
+    cout << "There are " << sCount << " " << " \'" << missing_number << "\'" << " with serial coding" << endl;
+    return 0;
 }
