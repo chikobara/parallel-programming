@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <random>
+#include <pthread.h>
 
 using namespace std;
 
@@ -13,18 +14,18 @@ uniform_int_distribution<int> distribution(0, 9);
 // int random_number = distribution(engine);
 
 pthread_mutex_t mutex;
-
 #define th_num 5
+
 int arraySize;
 int missing_number;
 int count = 0;
 vector<int> arr;
 
-struct ThreadData
+typedef struct
 {
     int id;
     int local_counter;
-};
+} ThreadData;
 
 void *threadCountMissing(void *thd)
 {
@@ -53,7 +54,7 @@ void countMissing(ThreadData threadData[])
     for (int i = 0; i < th_num; i++)
     {
         threadData[i].id = i;
-        pthread_create(&threads[i], NULL, threadCountMissing, &threadData[i]);
+        pthread_create(&threads[i], NULL, threadCountMissing, (void *)&threadData[i]);
     }
     for (int i = 0; i < th_num; i++)
     {
