@@ -1,10 +1,13 @@
 #include <pthread.h>
 #include <iostream>
 #include <vector>
+#include <cstdlib>
+#include <ctime>
 
 using namespace std;
 
 #define th_num 5
+#define maxSize 100
 pthread_mutex_t mutex;
 
 typedef struct
@@ -13,34 +16,37 @@ typedef struct
 } args;
 args thd[th_num];
 
-int count = 0;
-const int arraySize = 10;
-vector<int> arr1 = {4, 3, 2, 3, 4, 5, 6, 7, 8, 9};
-vector<int> arr2 = {3, 5, 7, 8, 3, 2, 5, 7, 8, 2};
-// vector<int> arr3;
+int count = 0, row, column;
 
-// int arr1[arraySize] = {5, 2, 2, 3, 5, 6, 7, 8, 9, 10};
-// int arr2[arraySize] = {2, 2, 2, 3, 5, 6, 7, 8, 9, 10};
-
-int arr3[arraySize];
-int portion = arraySize / th_num;
+int arr1[maxSize][maxSize];
+int arr2[maxSize][maxSize];
+int arr3[maxSize][maxSize];
+int portion;
 
 void *threadMul(void *thd)
 {
+    if ((portion = row / th_num) < 1)
+        portion = 1;
+    else
+        portion = row / th_num;
+
     args *threadData = (args *)thd;
     int start = portion * threadData->id;
     for (int i = start; i < start + portion; i++)
     {
-        // pthread_mutex_lock(&mutex);
-        arr3[i] = arr1[i] * arr2[i];
-        // pthread_mutex_unlock(&mutex);
+        for (int j = 0; j < column; j++)
+        {
+            for (int k = 0; k < column; k++)
+            {
+                arr3[i][j] += arr1[i][k] * arr2[k][j];
+            }
+        }
     }
     return NULL;
 }
 
 void matrixMul()
 {
-    pthread_mutex_init(&mutex, NULL);
     pthread_t threads[th_num];
     for (int i = 0; i < th_num; i++)
     {
@@ -52,27 +58,48 @@ void matrixMul()
         pthread_join(threads[i], NULL);
     }
 }
-void printarr(vector<int> array)
+void printarr()
 {
-    for (int i = 0; i < arraySize; i++)
+    cout << "1st Array" << endl;
+    for (int i = 0; i < column; i++)
     {
-        cout << array[i] << " ";
+        for (int j = 0; j < column; j++)
+            cout << arr1[i][j] << " ";
+        cout << endl;
     }
     cout << endl;
-}
-void printarr(int array[])
-{
-    for (int i = 0; i < arraySize; i++)
+    cout << "2nd Array" << endl;
+    for (int i = 0; i < column; i++)
     {
-        cout << array[i] << " ";
+        for (int j = 0; j < column; j++)
+            cout << arr2[i][j] << " ";
+        cout << endl;
     }
-    cout << endl;
+    cout << "3rd Array : " << endl;
+    for (int i = 0; i < column; i++)
+    {
+        for (int j = 0; j < column; j++)
+            cout << arr3[i][j] << " ";
+        cout << endl;
+    }
 }
 int main()
 {
+    cout << "Type array row size : ";
+    cin >> row;
+    cout << "\nType array column size : ";
+    cin >> column;
+    srand(time(0));
+    for (int i = 0; i < row; i++)
+    {
+        for (int j = 0; j < column; j++)
+        {
+            arr1[i][j] = rand() % 10;
+            arr2[i][j] = rand() % 10;
+        }
+    }
+    cout << endl;
     matrixMul();
-    printarr(arr1);
-    printarr(arr2);
-    printarr(arr3);
+    printarr();
     return 0;
 }
