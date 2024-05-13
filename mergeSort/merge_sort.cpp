@@ -13,52 +13,21 @@ struct ThreadArgs
 // Function to merge two sorted arrays
 void merge(std::vector<int> &arr, int left, int mid, int right)
 {
-    int n1 = mid - left + 1;
-    int n2 = right - mid;
-
-    // Create temp arrays
-    std::vector<int> L(n1), R(n2);
-
-    // Copy data to temp arrays L[] and R[]
-    for (int i = 0; i < n1; i++)
-        L[i] = arr[left + i];
-    for (int j = 0; j < n2; j++)
-        R[j] = arr[mid + 1 + j];
-
-    // Merge the temp arrays back into arr[left..right]
-    int i = 0;    // Initial index of first subarray
-    int j = 0;    // Initial index of second subarray
-    int k = left; // Initial index of merged subarray
-    while (i < n1 && j < n2)
+    std::vector<int> temp;
+    int i = left, j = mid + 1, k = left;
+    while (i <= mid && j <= right)
     {
-        if (L[i] <= R[j])
-        {
-            arr[k] = L[i];
-            i++;
-        }
+        if (arr[i] <= arr[j])
+            temp[k++] = arr[i++];
         else
-        {
-            arr[k] = R[j];
-            j++;
-        }
-        k++;
+            temp[k++] = arr[j++];
     }
-
-    // Copy the remaining elements of L[], if any
-    while (i < n1)
-    {
-        arr[k] = L[i];
-        i++;
-        k++;
-    }
-
-    // Copy the remaining elements of R[], if any
-    while (j < n2)
-    {
-        arr[k] = R[j];
-        j++;
-        k++;
-    }
+    while (i <= mid)
+        temp[k++] = arr[i++];
+    while (j <= right)
+        temp[k++] = arr[j++];
+    for (i = left; i <= right; i++)
+        arr[i] = temp[i - left];
 }
 
 // Function for merge sort

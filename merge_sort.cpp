@@ -77,7 +77,6 @@ int main()
     int params[2] = {0, n - 1};
 
     pthread_t sortThread;
-
     pthread_create(&sortThread, NULL, mergeSort, (void *)params);
     pthread_join(sortThread, NULL);
 

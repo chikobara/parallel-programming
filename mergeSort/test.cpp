@@ -11,11 +11,20 @@ int temp[maxsize];
 
 void merge(int low, int mid, int high)
 {
-    while (low <= mid && mid << high)
+    int i = low, j = mid + 1, k = low;
+    while (i <= mid && j <= high)
     {
-        if (arr[low] < arr[mid])
-            temp[]
+        if (arr[i] < arr[j])
+            temp[k++] = arr[i++];
+        else
+            temp[k++] = arr[j++];
     }
+    while (i <= mid)
+        temp[k++] = arr[i++];
+    while (j <= high)
+        temp[k++] = arr[j++];
+    for (i = low; i <= high; i++)
+        arr[i] = temp[i];
 }
 void *mergesort(void *args)
 {
@@ -45,15 +54,17 @@ void *mergesort(void *args)
 int main()
 {
     int n;
+    cout << "Enter the number of elements: ";
     cin >> n;
-
     srand(time(0));
-    cout << "Random generated array : ";
-    for (int i = 0; i < n; i++)
+    cout << "Random generated elements: ";
+    for (int i = 0; i < n; ++i)
     {
         arr[i] = rand() % 10;
         cout << arr[i] << " ";
     }
+    cout << endl;
+
     int params[2] = {0, n - 1};
     pthread_t thread;
     pthread_create(&thread, NULL, mergesort, (void *)&params);
