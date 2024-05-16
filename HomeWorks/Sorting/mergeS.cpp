@@ -2,6 +2,7 @@
 #include <pthread.h>
 #include <cstdlib>
 #include <ctime>
+#include <time.h>
 
 using namespace std;
 
@@ -65,16 +66,21 @@ int main()
     }
     cout << endl;
 
+    clock_t start_timer, end_timer;
+
     int params[2] = {0, n - 1};
     pthread_t thread;
+    start_timer = clock();
     pthread_create(&thread, NULL, mergesort, (void *)&params);
     pthread_join(thread, NULL);
-
+    end_timer = clock();
+    double timer = ((double)end_timer - start_timer) / CLOCKS_PER_SEC;
     cout << "\nSourted array : ";
     for (int i = 0; i < n; i++)
     {
         cout << arr[i] << " ";
     }
-    cout << endl;
+    cout << endl
+         << "Time taken : " << timer << "s " << endl;
     return 0;
 }

@@ -1,6 +1,5 @@
 #include <pthread.h>
 #include <iostream>
-#include <vector>
 #include <cstdlib>
 #include <ctime>
 

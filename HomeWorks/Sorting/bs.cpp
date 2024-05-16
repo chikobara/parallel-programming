@@ -2,8 +2,9 @@
 #include <pthread.h>
 #include <cstdlib>
 #include <ctime>
+#include <time.h>
 
-#define maxSize 100
+#define maxSize 1024
 
 int arr[maxSize];
 int n;
@@ -41,6 +42,7 @@ void bubbleSort()
 	threadArgs[0].end = n / 2;
 	threadArgs[1].start = 0;
 	threadArgs[1].end = n;
+
 	for (int i = 0; i < 2; i++)
 	{
 		pthread_create(&threads[i], NULL, sortThread, (void *)&threadArgs[i]);
@@ -50,7 +52,6 @@ void bubbleSort()
 	{
 		pthread_join(threads[i], NULL);
 	}
-
 	int temp;
 	for (int i = 0; i < n; i++)
 	{
@@ -78,12 +79,18 @@ int main()
 		printf("%d ", arr[i]);
 	}
 	printf("\n");
+
+	clock_t start_timer, end_timer;
+	start_timer = clock();
 	bubbleSort();
+	end_timer = clock();
+	double timer = ((double)end_timer - start_timer) / CLOCKS_PER_SEC;
+
 	printf("Sorted array : ");
 	for (int i = 0; i < n; i++)
 	{
 		printf("%d ", arr[i]);
 	}
-	printf("\n");
+	printf("\nTime takes : %fs \n", timer);
 	return 0;
 }
