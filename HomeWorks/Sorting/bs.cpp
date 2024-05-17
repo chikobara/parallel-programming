@@ -7,13 +7,15 @@
 #define maxSize 1024
 
 int arr[maxSize];
-int n;
+int n, tmp;
+int max_threads = (n + 1) / 2;
+pthread_mutex_t mutex;
+
 typedef struct
 {
 	int start;
 	int end;
 } args;
-
 void *sortThread(void *threadArgs)
 {
 	args *thA = (args *)threadArgs;
@@ -66,7 +68,63 @@ void bubbleSort()
 		}
 	}
 }
+void swap(int *a, int *b)
+{
+	int temp = *a;
+	*a = *b;
+	*b = temp;
+}
 
+void *compare(void *arg)
+{
+	int i = tmp;
+	tmp += 2;
+
+	if ((i + 1 < n) && (arr[i] > arr[i + 1]))
+	{
+		swap(&arr[i], &arr[i + 1]);
+	}
+	return NULL;
+}
+void oddEven()
+{
+	pthread_t threads[max_threads];
+	for (int i = 0; i < n; i++)
+	{
+		if (i % 2 == 1)
+		{
+			tmp = 0;
+			for (int j = 0; j < max_threads; j++)
+			{
+				pthread_create(&threads[j], NULL, compare, NULL);
+			}
+			for (int j = 0; j < max_threads; j++)
+			{
+				pthread_join(threads[j], NULL);
+			}
+		}
+		else
+		{
+			tmp = 1;
+			for (int j = 0; j < max_threads; j++)
+			{
+				pthread_create(&threads[j], NULL, compare, NULL);
+			}
+			for (int j = 0; j < max_threads; j++)
+			{
+				pthread_join(threads[j], NULL);
+			}
+		}
+	}
+}
+
+void printArray()
+{
+	for (int i = 0; i < n; i++)
+	{
+		printf("%d ", arr[i]);
+	}
+}
 int main()
 {
 	std::cout << "Type array size : ";
@@ -76,7 +134,7 @@ int main()
 	for (int i = 0; i < n; i++)
 	{
 		arr[i] = rand() % 10;
-		printf("%d ", arr[i]);
+		// printf("%d ", arr[i]);
 	}
 	printf("\n");
 
@@ -87,10 +145,24 @@ int main()
 	double timer = ((double)end_timer - start_timer) / CLOCKS_PER_SEC;
 
 	printf("Sorted array : ");
+	// printArray();
+	printf("\nTime takes : %fs \n", timer);
+
+	printf("Now with OETS sort\n");
+	// re-randomize the array
 	for (int i = 0; i < n; i++)
 	{
-		printf("%d ", arr[i]);
+		arr[i] = rand() % 10;
+		// printf("%d ", arr[i]);
 	}
-	printf("\nTime takes : %fs \n", timer);
+	// printf("\n");
+
+	start_timer = clock();
+	oddEven();
+	end_timer = clock();
+	timer = ((double)end_timer - start_timer) / CLOCKS_PER_SEC;
+	// printArray();
+	printf("Time taken : %fs \n", timer);
+
 	return 0;
 }
