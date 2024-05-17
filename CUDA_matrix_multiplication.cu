@@ -90,6 +90,6 @@ int main()
 
     cudaMemcpy(result_CPU, result_GPU, bytes, cudaMemcpyDeviceToHost);
     printf("\nMatrix Multiplication : \n");
-    printMatrix(rows, cols, result_CPU);
+    // printMatrix(rows, cols, result_CPU);
     printf("Time taken : %fs \n", timer);
 }

@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
+#include <time.h>
 
 using namespace std;
 
@@ -98,7 +99,13 @@ int main()
         }
     }
     cout << endl;
+    clock_t start_timer, end_timer;
+
+    start_timer = clock();
     matrixMul();
-    printarr();
-    return 0;
+    end_timer = clock();
+    double timer = ((double)end_timer - start_timer) / CLOCKS_PER_SEC;
+
+    printf("Time taken : %fs \n", timer);
+    // printarr();
 }
