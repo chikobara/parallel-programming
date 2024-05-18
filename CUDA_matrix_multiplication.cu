@@ -92,4 +92,12 @@ int main()
     printf("\nMatrix Multiplication : \n");
     // printMatrix(rows, cols, result_CPU);
     printf("Time taken : %fs \n", timer);
+
+    // Free memory
+    free(matrixA_CPU);
+    free(matrixB_CPU);
+    free(result_CPU);
+    cudaFree(matrixA_GPU);
+    cudaFree(matrixB_GPU);
+    cudaFree(result_GPU);
 }
