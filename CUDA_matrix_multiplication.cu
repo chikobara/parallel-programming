@@ -29,6 +29,17 @@ void printMatrix(int rows, int cols, int *matrix)
     // printf("\n");
 }
 
+__global__ void matrixAdditionGPU(int rows, int cols, int *matrixA, int *matrixB, int *result)
+{
+    int i = blockIdx.x * blockDim.x + threadIdx.x;
+    int j = blockIdx.y * blockDim.y + threadIdx.y;
+
+    if (i < rows && j < cols)
+    {
+        result[i * cols + j] = matrixA[i * cols + j] + matrixB[i * cols + j];
+    }
+}
+
 __global__ void matrixMultiplicationGPU(int rowsA, int colsA, int colsB, int *matrixA, int *matrixB, int *result)
 {
     int i = blockIdx.x * blockDim.x + threadIdx.x;
@@ -86,6 +97,7 @@ int main()
     start_timer = clock();
     matrixMultiplicationGPU<<<numBlocks, threadsPerBlock>>>(rows, cols, cols, matrixA_GPU, matrixB_GPU, result_GPU);
     end_timer = clock();
+
     double timer = ((double)end_timer - start_timer) / CLOCKS_PER_SEC;
 
     cudaMemcpy(result_CPU, result_GPU, bytes, cudaMemcpyDeviceToHost);

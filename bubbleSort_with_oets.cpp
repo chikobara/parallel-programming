@@ -93,7 +93,7 @@ void oddEven()
 	{
 		if (i % 2 == 1)
 		{
-			tmp = 0;
+			tmp = 0; // odd
 			for (int j = 0; j < max_threads; j++)
 			{
 				pthread_create(&threads[j], NULL, compare, NULL);
@@ -134,7 +134,7 @@ int main()
 	for (int i = 0; i < n; i++)
 	{
 		arr[i] = rand() % 10;
-		// printf("%d ", arr[i]);
+		printf("%d ", arr[i]);
 	}
 	printf("\n");
 
@@ -145,7 +145,7 @@ int main()
 	double timer = ((double)end_timer - start_timer) / CLOCKS_PER_SEC;
 
 	printf("Sorted array : ");
-	// printArray();
+	printArray();
 	printf("\nTime takes : %fs \n", timer);
 
 	printf("Now with OETS sort\n");
@@ -153,16 +153,16 @@ int main()
 	for (int i = 0; i < n; i++)
 	{
 		arr[i] = rand() % 10;
-		// printf("%d ", arr[i]);
+		printf("%d ", arr[i]);
 	}
-	// printf("\n");
+	printf("\n");
 
 	start_timer = clock();
 	oddEven();
 	end_timer = clock();
 	timer = ((double)end_timer - start_timer) / CLOCKS_PER_SEC;
-	// printArray();
-	printf("Time taken : %fs \n", timer);
+	printArray();
+	printf("\nTime taken : %fs \n", timer);
 
 	return 0;
 }

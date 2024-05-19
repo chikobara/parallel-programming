@@ -17,7 +17,6 @@ typedef struct
 args thd[th_num];
 
 int count = 0, row, column;
-
 int arr1[maxSize][maxSize];
 int arr2[maxSize][maxSize];
 int arr3[maxSize][maxSize];
@@ -25,13 +24,15 @@ int portion;
 
 void *threadMul(void *thd)
 {
-    if ((portion = row / th_num) < 1)
+    if ((portion = row / th_num) < 1) // case where the rows are 5 or less (equals to threads or less)
         portion = 1;
     else
         portion = row / th_num;
 
     args *threadData = (args *)thd;
+
     int start = portion * threadData->id;
+
     for (int i = start; i < start + portion; i++)
     {
         for (int j = 0; j < column; j++)
@@ -58,6 +59,7 @@ void matrixMul()
         pthread_join(threads[i], NULL);
     }
 }
+
 void printarr()
 {
     cout << "1st Array" << endl;
@@ -83,6 +85,7 @@ void printarr()
         cout << endl;
     }
 }
+
 int main()
 {
     cout << "Type array row size : ";
@@ -90,6 +93,7 @@ int main()
     cout << "\nType array column size : ";
     cin >> column;
     srand(time(0));
+    // fill the arrays with random numbers
     for (int i = 0; i < row; i++)
     {
         for (int j = 0; j < column; j++)
@@ -98,13 +102,14 @@ int main()
             arr2[i][j] = rand() % 10;
         }
     }
-    cout << endl;
-    clock_t start_timer, end_timer;
 
+    cout << endl;
+
+    clock_t start_timer, end_timer; //
     start_timer = clock();
     matrixMul();
     end_timer = clock();
-    double timer = ((double)end_timer - start_timer) / CLOCKS_PER_SEC;
+    double timer = ((double)end_timer - start_timer) / CLOCKS_PER_SEC; // calculate the time
 
     printf("Time taken : %fs \n", timer);
     // printarr();

@@ -35,11 +35,12 @@ void *mergesort(void *args)
 
     if (first < last)
     {
-
         int mid = first + (last - first) / 2;
         int leftparams[2] = {first, mid};
         int rightparams[2] = {mid + 1, last};
+
         pthread_t lthread, rthread;
+
         pthread_create(&lthread, NULL, mergesort, (void *)&leftparams);
         pthread_create(&rthread, NULL, mergesort, (void *)&rightparams);
 
@@ -69,18 +70,21 @@ int main()
     clock_t start_timer, end_timer;
 
     int params[2] = {0, n - 1};
+
     pthread_t thread;
+
     start_timer = clock();
     pthread_create(&thread, NULL, mergesort, (void *)&params);
     pthread_join(thread, NULL);
     end_timer = clock();
-    double timer = ((double)end_timer - start_timer) / CLOCKS_PER_SEC;
+
+    double timer = ((double)end_timer - start_timer) / CLOCKS_PER_SEC; // calculate time taken
+
     cout << "\nSourted array : ";
     for (int i = 0; i < n; i++)
     {
         cout << arr[i] << " ";
     }
-    cout << endl
-         << "Time taken : " << timer << "s " << endl;
+    cout << "\nTime taken : " << timer << "s " << endl;
     return 0;
 }
